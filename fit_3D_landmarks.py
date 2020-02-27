@@ -24,6 +24,7 @@ from psbody.mesh import Mesh
 from psbody.mesh.meshviewer import MeshViewer
 from utils.landmarks import load_embedding, tf_get_model_lmks, create_lmk_spheres
 from tensorflow.contrib.opt import ScipyOptimizerInterface as scipy_pt
+from sklearn.preprocessing import minmax_scale
 
 def fit_lmk3d(target_3d_lmks, template_fname, tf_model_fname, lmk_face_idx, lmk_b_coords, weights, show_fitting=True):
     '''
@@ -56,6 +57,21 @@ def fit_lmk3d(target_3d_lmks, template_fname, tf_model_fname, lmk_face_idx, lmk_
         tf_exp = [x for x in tf.trainable_variables() if 'exp' in x.name][0]
 
         lmks = tf_get_model_lmks(tf_model, template_mesh, lmk_face_idx, lmk_b_coords)
+        print(lmks.shape, lmks[0])
+        print(target_3d_lmks.shape, target_3d_lmks[0])
+
+
+        # 1
+        # lengths = np.linalg.norm(target_3d_lmks, axis=-1)
+        # target_3d_lmks[lengths > 0] = target_3d_lmks[lengths > 0] / lengths[lengths > 0][:, np.newaxis]
+
+        # 2
+        # target_3d_lmks /= np.max(np.abs(target_3d_lmks),axis=0)
+
+        # 3
+        target_3d_lmks = minmax_scale(target_3d_lmks, feature_range=(-1,1))
+        print("NORMALISED: ", target_3d_lmks[0])
+
         lmk_dist = tf.reduce_sum(tf.square(1000 * tf.subtract(lmks, target_3d_lmks)))
         neck_pose_reg = tf.reduce_sum(tf.square(tf_pose[:3]))
         jaw_pose_reg = tf.reduce_sum(tf.square(tf_pose[3:6]))
@@ -104,7 +120,9 @@ def run_3d_lmk_fitting():
     flame_lmk_path = './data/flame_static_embedding.pkl'
     # 3D landmark file that should be fitted (landmarks must be corresponding with the defined FLAME landmarks)
     # see "img1_lmks_visualized.jpeg" or "see the img2_lmks_visualized.jpeg" for the order of the landmarks
-    target_lmk_path = './data/landmark_3d.npy'
+    # target_lmk_path = './data/landmark_3d.npy'
+    # target_lmk_path = '/home/kj/Data/me/me/1.npy'
+    target_lmk_path = '/home/kj/Data/me/FLAME/lm.npy'
 
     # Output filename
     out_mesh_fname = './results/landmark_3d.ply'
@@ -134,6 +152,7 @@ def run_3d_lmk_fitting():
         os.makedirs(os.path.dirname(out_mesh_fname))
 
     result_mesh.write_ply(out_mesh_fname)
+    print("WROTE .ply !!")
 
 
 if __name__ == '__main__':

@@ -68,6 +68,10 @@ def fit_lmk2d(target_img, target_2d_lmks, template_fname, tf_model_fname, lmk_fa
         s3d = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(lmks_3d-tf.reduce_mean(lmks_3d, axis=0))[:, :2], axis=1)))
         tf_scale = tf.Variable(s2d/s3d, dtype=lmks_3d.dtype)
 
+        print(" s2d: ", s2d.shape, type(s2d))
+        print(" s3d: ", s3d.shape, type(s3d))
+        print(" tf_scale: ", tf_scale.shape, type(tf_scale))
+
         # trans = 0.5*np.array((target_img.shape[0], target_img.shape[1]))/tf_scale
         # trans = 0.5 * s3d * np.array((target_img.shape[0], target_img.shape[1])) / s2d
         lmks_proj_2d = tf_project_points(lmks_3d, tf_scale, np.zeros(2))
@@ -88,6 +92,9 @@ def fit_lmk2d(target_img, target_2d_lmks, template_fname, tf_model_fname, lmk_fa
             import numpy as np
             from psbody.mesh import Mesh
             from utils.render_mesh import render_mesh
+            print('verts: ', verts.shape)
+            print('scale: ', scale.shape)
+            print('faces: ', faces.shape)
 
             if lmk_dist>0.0 or shape_reg>0.0 or exp_reg>0.0 or neck_pose_reg>0.0 or jaw_pose_reg>0.0 or eyeballs_pose_reg>0.0:
                 print('lmk_dist: %f, shape_reg: %f, exp_reg: %f, neck_pose_reg: %f, jaw_pose_reg: %f, eyeballs_pose_reg: %f' % (lmk_dist, shape_reg, exp_reg, neck_pose_reg, jaw_pose_reg, eyeballs_pose_reg))
@@ -108,11 +115,14 @@ def fit_lmk2d(target_img, target_2d_lmks, template_fname, tf_model_fname, lmk_fa
                     cv2.circle(rendered_img, (int(x), int(y)), 4, (255, 0, 0), -1)
                 target_img = np.hstack((target_img, rendered_img))
 
-            cv2.imshow('img', target_img)
-            cv2.waitKey(10)
+            # cv2.imshow('img', target_img)
+            # cv2.waitKey(10)
 
         print('Optimize rigid transformation')
         vars = [tf_scale, tf_trans, tf_rot]
+        print('tf_scale: ', tf_scale.shape)
+        print('tf_trans: ', tf_trans.shape)
+        print('tf_rot: ', tf_rot.shape)
         loss = lmk_dist
         optimizer = scipy_pt(loss=loss, var_list=vars, method='L-BFGS-B', options={'disp': 1, 'ftol': 5e-6})
         optimizer.minimize(session, fetches=[tf_model, tf_scale, tf.constant(template_mesh.f), tf.constant(target_img), tf.constant(target_2d_lmks), lmks_proj_2d], loss_callback=on_step)
@@ -153,6 +163,9 @@ def run_2d_lmk_fitting(tf_model_fname, template_fname, flame_lmk_path, texture_m
 
     target_img = cv2.imread(target_img_path)
     lmk_2d = np.load(target_lmk_path)
+
+    if lmk_2d.shape[1] == 3:
+        lmk_2d = lmk_2d[:, :2]
 
     weights = {}
     # Weight of the landmark distance term
@@ -204,10 +217,10 @@ if __name__ == '__main__':
     # Pre-computed texture mapping for FLAME topology meshes
     parser.add_argument('--texture_mapping', default='./data/texture_data.npy', help='pre-computed FLAME texture mapping')
     # Target image (used for visualization only)
-    parser.add_argument('--target_img_path', default='./data/imgHQ00088.jpeg', help='Path of the target image')
+    parser.add_argument('--target_img_path', default='./data/imgHQ01148.jpeg', help='Path of the target image')
     # 2D landmark file that should be fitted (landmarks must be corresponding with the defined FLAME landmarks)
     # see "img1_lmks_visualized.jpeg" or "see the img2_lmks_visualized.jpeg" for the order of the landmarks
-    parser.add_argument('--target_lmk_path', default='./data/imgHQ00088_lmks.npy', help='2D landmark file that should be fitted (landmarks must be corresponding with the defined FLAME landmarks)')
+    parser.add_argument('--target_lmk_path', default='./data/imgHQ01148_lmks.npy', help='2D landmark file that should be fitted (landmarks must be corresponding with the defined FLAME landmarks)')
     # Output path
     parser.add_argument('--out_path', default='./results', help='Path of the fitting output')
     args = parser.parse_args()
