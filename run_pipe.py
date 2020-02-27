@@ -45,8 +45,8 @@ target_scale = out_path + target_name + '_scale.obj'
 texture_mapping = './data/texture_data.npy'
 out_path = out_path
 
-bti.build_texture_from_image(source_img, target_mesh, target_scale, texture_mapping, out_path)
-print("[SUCCESS] Created textured mesh")
+# bti.build_texture_from_image(source_img, target_mesh, target_scale, texture_mapping, out_path)
+# print("[SUCCESS] Created textured mesh")
 
 
 
