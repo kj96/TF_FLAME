@@ -47,9 +47,9 @@ def compute_texture_map(source_img, target_mesh, target_scale, texture_data):
     texture = np.zeros((512, 512, 3))
     for i, (x, y) in enumerate(proj_2d_points):
         if n_dot_view[i] > 0.0:
-            texture[y_coords[valid_pixel_ids[i]].astype(int), x_coords[valid_pixel_ids[i]].astype(int), :3] = [213,167,144]
+            texture[y_coords[valid_pixel_ids[i]].astype(int), x_coords[valid_pixel_ids[i]].astype(int), :3] = [167, 144,213]
             continue
-        if x > 0 and x < source_img.shape[1] and y > 0 and y < source_img.shape[0] and str(y)+'#'+str(x) in face_xy:
+        if x > 0 and x < source_img.shape[1] and y > 0 and y < source_img.shape[0]:     #  and str(y)+'#'+str(x) in face_xy
             # print(polygon.contains(Point(x, y)))
             # print("x: ", x, " y: ", y)
             texture[y_coords[valid_pixel_ids[i]].astype(int), x_coords[valid_pixel_ids[i]].astype(int), :3] = source_img[y, x]
