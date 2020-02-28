@@ -163,7 +163,9 @@ def run_2d_lmk_fitting(tf_model_fname, template_fname, flame_lmk_path, texture_m
 
     target_img = cv2.imread(target_img_path)
     lmk_2d = np.load(target_lmk_path)
-
+    
+    if lmk_2d.shape[0] == 68:
+        lmk_2d = lmk_2d[17:,]
     if lmk_2d.shape[1] == 3:
         lmk_2d = lmk_2d[:, :2]
 

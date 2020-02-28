@@ -23,7 +23,7 @@ import argparse
 import numpy as np
 from psbody.mesh import Mesh
 from psbody.mesh.meshviewer import MeshViewer
-from utils.project_on_mesh import compute_texture_map
+from utils.project_face_on_mesh import compute_texture_map
 
 
 def build_texture_from_image(source_img_fname, target_mesh_fname, target_scale_fname, texture_mapping, out_path):
