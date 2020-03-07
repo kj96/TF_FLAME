@@ -6,7 +6,7 @@ from dl_utils.detection import face_2D_landmark_68_fa as f2dlm
 from results.jeff.filter_face_tex import filter_tex
 
 target_dir  =   '/home/kj/DL/MoYo/Dev/Face3D/github/TF_FLAME/data/test/'
-target_name =   'me'
+target_name =   'sabeel'
 target_file =   target_dir + target_name
 
 target_img   =   target_file + '.png'
