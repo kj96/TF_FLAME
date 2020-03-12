@@ -30,7 +30,7 @@ for y in range(img.shape[1]):  # img.shape[0]
         else:
             d_arr.append(-1)
         # print("-> img[%d][%d]" %(x, y))
-        update_img[y, x] = img[y, x]
+        update_img[x, y] = img[x, y]
         # cv2.imshow("Updated Boundary", update_img)
         # cv2.waitKey(0)
     if max(d_arr) < 0:
