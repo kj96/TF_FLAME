@@ -36,7 +36,7 @@ for y in range(img.shape[1]):  # img.shape[0]
     if max(d_arr) < 0:
         continue
     min_max = get_min_max(d_arr)
-    xy_arr = [[min_max[0], y], [min_max[1], y]]
+    xy_arr = [[y, min_max[0]], [y, min_max[1]]]
     boundary_xy += xy_arr
     
     print("## img[%d][%d] = [%s %s] = [%f %f] : %d : %s" %(x, y, img[xy_arr[0][0], xy_arr[0][1]], img[xy_arr[1][0], xy_arr[1][1]], d_arr[min_max[0]], d_arr[min_max[1]], len(xy_arr), xy_arr))
